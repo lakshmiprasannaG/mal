@@ -1,43 +1,20 @@
-const eval = (...args) => args[0];
-const printLine = (...args) => {
-  console.log(args[0]);
-};
+const readline = require('readline');
 
-const logWithoutTrailingNewline = (input) => {
-  process.stdout.write(input);
-};
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
-const readLine = () => {
-  return new Promise((resolve) => {
-    logWithoutTrailingNewline('user> ');
+const READ = (str) => str;
+const EVAL = (str) => str;
+const PRINT = (str) => str;
 
-    process.stdin.setEncoding('utf8');
-    process.stdin.on('data', (line) => {
-      resolve(line);
-    });
+const rep = (str) => PRINT(EVAL(READ(str)));
+
+const repl = () =>
+  rl.question('user> ', (line) => {
+    console.log(rep(line));
+    repl();
   });
-};
 
-const myRepl = () => readLine().then(eval).then(printLine).then(myRepl);
-
-myRepl();
-
-/* 
-const read = (...args) => args[0];
-
-const rep = (...args) => {
-  console.log(print(eval(read(...args))));
-};
-
-const main = () => {
-  logWithoutTrailingNewline('user> ');
-
-  process.stdin.setEncoding('utf8');
-  process.stdin.on('data', (line) => {
-    rep(line);
-    logWithoutTrailingNewline('user> ');
-  });
-};
-
-main();
-*/
+repl();
