@@ -62,7 +62,7 @@ const read_vector = (reader) => {
 const read_atom = (reader) => {
   const token = reader.next();
 
-  if (token.match(/^[0-9]+$/)) {
+  if (token.match(/^-?[0-9]+$/)) {
     return new MalValue(parseInt(token));
   }
 
