@@ -1,7 +1,7 @@
 const readline = require('readline');
 const { read_str } = require('./reader');
 const { pr_str } = require('./printer');
-const { MalSymbol, MalList, MalValue } = require('./types');
+const { MalSymbol, MalList } = require('./types');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -9,26 +9,15 @@ const rl = readline.createInterface({
 });
 
 const env = {
-  '+': (...args) =>
-    new MalValue(args.reduce((context, num) => context + num.value, 0)),
+  '+': (...args) => args.reduce((context, num) => context + num),
 
-  '-': (...args) =>
-    new MalValue(args.reduce((context, num) => context - num.value, 0)),
+  '-': (...args) => args.reduce((context, num) => context - num),
 
-  '*': (...args) =>
-    new MalValue(args.reduce((context, num) => context * num.value, 1)),
+  '*': (...args) => args.reduce((context, num) => context * num),
 
-  '/': (...args) =>
-    new MalValue(
-      args.reduce(
-        (context, num) => new MalValue(context.value / num.value)
-      ).value
-    ),
+  '/': (...args) => args.reduce((context, num) => context / num),
 
-  // '+': (a, b) => new MalValue(a.value + b.value),
-  // '-': (a, b) => new MalValue(a.value - b.value),
-  // '*': (a, b) => new MalValue(a.value * b.value),
-  // '/': (a, b) => new MalValue(a.value / b.value),
+  '=': (a, b) => a === b,
 };
 
 const eval_ast = (ast, env) => {
@@ -44,7 +33,6 @@ const eval_ast = (ast, env) => {
   return ast;
 };
 
-const READ = (str) => read_str(str);
 const EVAL = (ast, env) => {
   if (!(ast instanceof MalList)) {
     return eval_ast(ast, env);
@@ -57,6 +45,9 @@ const EVAL = (ast, env) => {
   const [fn, ...args] = eval_ast(ast, env).value;
   return fn.apply(null, args);
 };
+
+const READ = (str) => read_str(str);
+
 const PRINT = (malValue) => pr_str(malValue);
 
 const rep = (str) => PRINT(EVAL(READ(str), env));
