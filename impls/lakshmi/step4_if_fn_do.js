@@ -3,7 +3,7 @@ const { read_str } = require('./reader');
 const { pr_str } = require('./printer');
 const { MalSymbol, MalList, MalVector, MalNil, MalBool } = require('./types');
 const { Env } = require('./env.js');
-const { initializeEnvWithEnvs } = require('./forms.js');
+const { initializeEnvWithSymbols } = require('./symbols.js');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -69,13 +69,15 @@ const EVAL = (ast, env) => {
     case 'if':
       const predicate = ast.value[1];
       const evalOfPredicate = EVAL(predicate, env);
-      console.log('eval of predicate => ', evalOfPredicate);
       const isFalsy = evalOfPredicate == null || evalOfPredicate == false;
 
       if (!isFalsy) {
         return EVAL(ast.value[2]);
       }
       return ast.value[3] ? EVAL(ast.value[3]) : new MalNil();
+
+    case 'fn*':
+      return () => {};
   }
 
   const [fn, ...args] = eval_ast(ast, env).value;
@@ -83,7 +85,7 @@ const EVAL = (ast, env) => {
 };
 
 const env = new Env();
-initializeEnvWithEnvs(env);
+initializeEnvWithSymbols(env);
 
 const READ = (str) => read_str(str);
 

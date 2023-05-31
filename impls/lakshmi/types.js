@@ -20,7 +20,32 @@ class MalList extends MalValue {
   }
 
   pr_str() {
-    return '(' + this.value.map((x) => x.pr_str()).join(' ') + ')';
+    return (
+      '(' +
+      this.value
+        .map((x) => {
+          return x instanceof MalValue ? x.pr_str() : x;
+        })
+        .join(' ') +
+      ')'
+    );
+  }
+
+  length() {
+    return this.value.length;
+  }
+
+  isEqualTo(list) {
+    if (this.length() != list.length()) {
+      return false;
+    }
+
+    for (let index = 0; index < this.length(); index++) {
+      if (this.value[index] != list.value[index]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   isEmpty() {

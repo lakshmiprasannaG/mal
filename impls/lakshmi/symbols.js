@@ -1,6 +1,6 @@
 const { MalSymbol, MalList } = require('./types');
 
-const initializeEnvWithEnvs = (env) => {
+const initializeEnvWithSymbols = (env) => {
   env.set(new MalSymbol('+'), (...args) =>
     args.reduce((context, num) => context + num)
   );
@@ -17,7 +17,20 @@ const initializeEnvWithEnvs = (env) => {
     args.reduce((context, num) => context / num)
   );
 
-  env.set(new MalSymbol('='), (a, b) => a === b);
+  env.set(new MalSymbol('='), (a, b) => {
+    if ((a instanceof MalList) & (b instanceof MalList)) {
+      return a.isEqualTo(b);
+    }
+    return a === b;
+  });
+
+  env.set(new MalSymbol('>'), (a, b) => a > b);
+
+  env.set(new MalSymbol('<'), (a, b) => a < b);
+
+  env.set(new MalSymbol('<='), (a, b) => a <= b);
+
+  env.set(new MalSymbol('>='), (a, b) => a >= b);
 
   env.set(new MalSymbol('list'), (...args) => new MalList(args));
 
@@ -25,7 +38,7 @@ const initializeEnvWithEnvs = (env) => {
 
   env.set(new MalSymbol('empty?'), (arg) => arg.isEmpty());
 
-  env.set(new MalSymbol('count'), (arg) => arg.length);
+  env.set(new MalSymbol('count'), (arg) => arg.length());
 
   env.set(new MalSymbol('prn'), (...args) => {
     console.log(...args);
@@ -33,4 +46,4 @@ const initializeEnvWithEnvs = (env) => {
   });
 };
 
-module.exports = { initializeEnvWithEnvs };
+module.exports = { initializeEnvWithSymbols };
