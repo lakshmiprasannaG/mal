@@ -1,8 +1,9 @@
 const readline = require('readline');
 const { read_str } = require('./reader');
 const { pr_str } = require('./printer');
-const { MalSymbol, MalList, MalVector } = require('./types');
+const { MalSymbol, MalList, MalVector, MalNil, MalBool } = require('./types');
 const { Env } = require('./env.js');
+const { initializeEnvWithEnvs } = require('./forms.js');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -64,6 +65,17 @@ const EVAL = (ast, env) => {
       const forms = ast.value.slice(1);
       const formsResult = forms.map((form) => EVAL(form, env));
       return formsResult[formsResult.length - 1];
+
+    case 'if':
+      const predicate = ast.value[1];
+      const evalOfPredicate = EVAL(predicate, env);
+      console.log('eval of predicate => ', evalOfPredicate);
+      const isFalsy = evalOfPredicate == null || evalOfPredicate == false;
+
+      if (!isFalsy) {
+        return EVAL(ast.value[2]);
+      }
+      return ast.value[3] ? EVAL(ast.value[3]) : new MalNil();
   }
 
   const [fn, ...args] = eval_ast(ast, env).value;
@@ -71,26 +83,7 @@ const EVAL = (ast, env) => {
 };
 
 const env = new Env();
-env.set(new MalSymbol('+'), (...args) =>
-  args.reduce((context, num) => context + num)
-);
-
-env.set(new MalSymbol('-'), (...args) =>
-  args.reduce((context, num) => context - num)
-);
-
-env.set(new MalSymbol('*'), (...args) =>
-  args.reduce((context, num) => context * num)
-);
-
-env.set(new MalSymbol('/'), (...args) =>
-  args.reduce((context, num) => context / num)
-);
-
-env.set(new MalSymbol('prn'), (...args) => {
-  console.log(...args);
-  return args.slice(-1)[0];
-});
+initializeEnvWithEnvs(env);
 
 const READ = (str) => read_str(str);
 
