@@ -15,7 +15,7 @@ class Env {
     }
 
     if (this.#outer != undefined) {
-      return this.outer.find(symbol);
+      return this.#outer.find(symbol);
     }
   }
 
