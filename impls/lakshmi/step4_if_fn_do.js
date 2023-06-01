@@ -67,17 +67,26 @@ const EVAL = (ast, env) => {
       return formsResult[formsResult.length - 1];
 
     case 'if':
-      const predicate = ast.value[1];
-      const evalOfPredicate = EVAL(predicate, env);
-      const isFalsy = evalOfPredicate == null || evalOfPredicate == false;
+      const [predicate, if_block, else_block] = ast.value.slice(1);
 
-      if (!isFalsy) {
-        return EVAL(ast.value[2]);
+      const evalOfPredicate = EVAL(predicate, env).value;
+      const isTruthy = evalOfPredicate !== null && evalOfPredicate !== false;
+
+      if (isTruthy) {
+        return EVAL(if_block, env);
       }
-      return ast.value[3] ? EVAL(ast.value[3]) : new MalNil();
+
+      return else_block ? EVAL(else_block, env) : new MalNil();
 
     case 'fn*':
-      return () => {};
+      const eval_fn = (...args) => {
+        const exprs = new MalList(args);
+        const [binds, body] = ast.value.slice(1);
+        const fnEnv = new Env(env, binds, exprs);
+        return EVAL(body, fnEnv);
+      };
+      eval_fn.toString = () => '#<function>';
+      return eval_fn;
   }
 
   const [fn, ...args] = eval_ast(ast, env).value;

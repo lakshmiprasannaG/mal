@@ -1,4 +1,4 @@
-const { MalSymbol, MalList } = require('./types');
+const { MalSymbol, MalList, MalBool, MalNil, MalValue } = require('./types');
 
 const initializeEnvWithSymbols = (env) => {
   env.set(new MalSymbol('+'), (...args) =>
@@ -24,13 +24,13 @@ const initializeEnvWithSymbols = (env) => {
     return a === b;
   });
 
-  env.set(new MalSymbol('>'), (a, b) => a > b);
+  env.set(new MalSymbol('>'), (a, b) => new MalBool(a > b));
 
-  env.set(new MalSymbol('<'), (a, b) => a < b);
+  env.set(new MalSymbol('<'), (a, b) => new MalBool(a < b));
 
-  env.set(new MalSymbol('<='), (a, b) => a <= b);
+  env.set(new MalSymbol('<='), (a, b) => new MalBool(a <= b));
 
-  env.set(new MalSymbol('>='), (a, b) => a >= b);
+  env.set(new MalSymbol('>='), (a, b) => new MalBool(a >= b));
 
   env.set(new MalSymbol('list'), (...args) => new MalList(args));
 
@@ -38,7 +38,17 @@ const initializeEnvWithSymbols = (env) => {
 
   env.set(new MalSymbol('empty?'), (arg) => arg.isEmpty());
 
-  env.set(new MalSymbol('count'), (arg) => arg.length());
+  env.set(new MalSymbol('count'), (arg) => {
+    if (arg instanceof MalNil) {
+      return 0;
+    }
+
+    if (arg instanceof MalValue) {
+      return arg.length();
+    }
+
+    return 1;
+  });
 
   env.set(new MalSymbol('prn'), (...args) => {
     console.log(...args);
