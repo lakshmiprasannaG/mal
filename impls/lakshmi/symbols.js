@@ -1,5 +1,18 @@
 const { MalSymbol, MalList, MalBool, MalNil, MalValue } = require('./types');
 
+const areEqual = (firstElement, secondElement) => {
+  if (firstElement.value.length != secondElement.value.length) {
+    return false;
+  }
+
+  for (let index = 0; index < firstElement.value.length; index++) {
+    if (firstElement.value[index] != secondElement.value[index]) {
+      return false;
+    }
+  }
+  return true;
+};
+
 const initializeEnvWithSymbols = (env) => {
   env.set(new MalSymbol('+'), (...args) =>
     args.reduce((context, num) => context + num)
@@ -18,9 +31,10 @@ const initializeEnvWithSymbols = (env) => {
   );
 
   env.set(new MalSymbol('='), (a, b) => {
-    if (a instanceof MalList && b instanceof MalList) {
-      return a.isEqualTo(b);
+    if (a instanceof MalValue && b instanceof MalValue) {
+      return areEqual(a, b);
     }
+
     return a === b;
   });
 
