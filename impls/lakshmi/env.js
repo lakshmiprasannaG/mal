@@ -1,5 +1,3 @@
-const { MalList } = require('./types');
-
 class Env {
   #outer;
   constructor(outer, binds, exprs) {
@@ -7,18 +5,13 @@ class Env {
     this.data = {};
     this.binds = binds;
     this.exprs = exprs;
-    this.#initialize();
   }
 
-  #initialize() {
-    if (this.binds instanceof MalList && this.exprs instanceof MalList) {
-      console.log('init => ', this.binds, this.exprs);
-      for (let index = 0; index < this.binds.length(); index++) {
-        const symbol = this.binds.value[index];
-        const value = this.exprs.value[index];
-        this.set(symbol, value);
-      }
-    }
+  bindEnv(exprs) {
+    this.binds.value.forEach((symbol, index) => {
+      const value = exprs.value[index];
+      this.set(symbol, value);
+    });
   }
 
   set(symbol, value) {
@@ -30,7 +23,7 @@ class Env {
       return this;
     }
 
-    if (this.#outer != undefined) {
+    if (this.#outer !== undefined) {
       return this.#outer.find(symbol);
     }
   }

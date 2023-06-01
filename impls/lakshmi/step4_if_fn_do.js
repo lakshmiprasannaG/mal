@@ -1,7 +1,7 @@
 const readline = require('readline');
 const { read_str } = require('./reader');
 const { pr_str } = require('./printer');
-const { MalSymbol, MalList, MalVector, MalNil, MalBool } = require('./types');
+const { MalSymbol, MalList, MalVector, MalNil } = require('./types');
 const { Env } = require('./env.js');
 const { initializeEnvWithSymbols } = require('./symbols.js');
 
@@ -9,6 +9,62 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
+
+const eval_let = (ast, env) => {
+  const letEnv = new Env(env);
+  const bindingList = ast.value[1].value;
+
+  for (let index = 0; index < bindingList.length; index = index + 2) {
+    const key = bindingList[index];
+    const value = bindingList[index + 1];
+    letEnv.set(key, EVAL(value, letEnv));
+  }
+
+  const astLastElement = ast.value.slice(-1)[0];
+
+  if (astLastElement instanceof MalSymbol) {
+    return EVAL(astLastElement, letEnv);
+  }
+
+  return EVAL(astLastElement, letEnv);
+};
+
+const eval_do = (ast, env) => {
+  const forms = ast.value.slice(1);
+  const formsResult = forms.map((form) => EVAL(form, env));
+  return formsResult[formsResult.length - 1];
+};
+
+const eval_if = (ast, env) => {
+  const [predicate, if_block, else_block] = ast.value.slice(1);
+
+  const evalOfPredicate = EVAL(predicate, env).value;
+
+  const isTrue =
+    evalOfPredicate !== false && evalOfPredicate !== new MalNil().value;
+
+  if (isTrue) {
+    return EVAL(if_block, env);
+  }
+
+  if (else_block === undefined) {
+    return new MalNil();
+  }
+  return EVAL(else_block, env);
+};
+
+const eval_fn = (ast, env) => {
+  const inner_fn = (...args) => {
+    const exprs = new MalList(args);
+    const [binds, body] = ast.value.slice(1);
+    const fnEnv = new Env(env, binds, exprs);
+    fnEnv.bindEnv(exprs);
+    return EVAL(body, fnEnv);
+  };
+
+  inner_fn.toString = () => '#<function>';
+  return inner_fn;
+};
 
 const eval_ast = (ast, env) => {
   if (ast instanceof MalSymbol) {
@@ -44,49 +100,16 @@ const EVAL = (ast, env) => {
       return env.get(ast.value[1]);
 
     case 'let*':
-      const letEnv = new Env(env);
-      const bindingList = ast.value[1].value;
-
-      for (let index = 0; index < bindingList.length; index = index + 2) {
-        const key = bindingList[index];
-        const value = bindingList[index + 1];
-        letEnv.set(key, EVAL(value, letEnv));
-      }
-
-      const astLastElement = ast.value.slice(-1)[0];
-
-      if (astLastElement instanceof MalSymbol) {
-        return EVAL(astLastElement, letEnv);
-      }
-
-      return EVAL(astLastElement, letEnv);
+      return eval_let(ast, env);
 
     case 'do':
-      const forms = ast.value.slice(1);
-      const formsResult = forms.map((form) => EVAL(form, env));
-      return formsResult[formsResult.length - 1];
+      return eval_do(ast, env);
 
     case 'if':
-      const [predicate, if_block, else_block] = ast.value.slice(1);
-
-      const evalOfPredicate = EVAL(predicate, env).value;
-      const isTruthy = evalOfPredicate !== null && evalOfPredicate !== false;
-
-      if (isTruthy) {
-        return EVAL(if_block, env);
-      }
-
-      return else_block ? EVAL(else_block, env) : new MalNil();
+      return eval_if(ast, env);
 
     case 'fn*':
-      const eval_fn = (...args) => {
-        const exprs = new MalList(args);
-        const [binds, body] = ast.value.slice(1);
-        const fnEnv = new Env(env, binds, exprs);
-        return EVAL(body, fnEnv);
-      };
-      eval_fn.toString = () => '#<function>';
-      return eval_fn;
+      return eval_fn(ast, env);
   }
 
   const [fn, ...args] = eval_ast(ast, env).value;

@@ -18,7 +18,7 @@ const initializeEnvWithSymbols = (env) => {
   );
 
   env.set(new MalSymbol('='), (a, b) => {
-    if ((a instanceof MalList) & (b instanceof MalList)) {
+    if (a instanceof MalList && b instanceof MalList) {
       return a.isEqualTo(b);
     }
     return a === b;
