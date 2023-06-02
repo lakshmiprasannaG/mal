@@ -32,10 +32,10 @@ const initializeEnvWithSymbols = (env) => {
 
   env.set(new MalSymbol('='), (a, b) => {
     if (a instanceof MalValue && b instanceof MalValue) {
-      return areEqual(a, b);
+      return new MalBool(areEqual(a, b));
     }
 
-    return a === b;
+    return new MalBool(a === b);
   });
 
   env.set(new MalSymbol('>'), (a, b) => new MalBool(a > b));
@@ -65,7 +65,6 @@ const initializeEnvWithSymbols = (env) => {
   });
 
   env.set(new MalSymbol('prn'), (...args) => {
-    console.log(...args);
     return args.slice(-1)[0];
   });
 };

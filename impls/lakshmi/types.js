@@ -90,4 +90,24 @@ class MalNil extends MalValue {
   }
 }
 
-module.exports = { MalValue, MalSymbol, MalList, MalVector, MalBool, MalNil };
+class MalFunction extends MalValue {
+  constructor(ast, params, env) {
+    super(ast);
+    this.params = params;
+    this.env = env;
+  }
+
+  pr_str() {
+    return '#<function>';
+  }
+}
+
+module.exports = {
+  MalValue,
+  MalSymbol,
+  MalList,
+  MalVector,
+  MalBool,
+  MalNil,
+  MalFunction,
+};

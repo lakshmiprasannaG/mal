@@ -10,7 +10,7 @@ class Env {
 
   #init() {
     this.binds.forEach((symbol, index) => {
-      const value = exprs[index];
+      const value = this.exprs[index];
       this.set(symbol, value);
     });
   }
