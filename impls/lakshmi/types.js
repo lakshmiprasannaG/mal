@@ -6,6 +6,16 @@ class MalValue {
   pr_str() {
     return this.value.toString();
   }
+
+  equals(anotherValue) {
+    return new MalBool(this.value === anotherValue.value);
+  }
+}
+
+class MalNumber extends MalValue {
+  constructor(value) {
+    super(value);
+  }
 }
 
 class MalSymbol extends MalValue {
@@ -14,7 +24,30 @@ class MalSymbol extends MalValue {
   }
 }
 
-class MalList extends MalValue {
+class MalIterables extends MalValue {
+  constructor(value) {
+    super(value);
+  }
+
+  equals(iterable) {
+    if (!(iterable instanceof MalIterables)) {
+      return new MalBool(false);
+    }
+    if (this.value.length !== iterable.value.length) {
+      return new MalBool(false);
+    }
+
+    this.value.forEach((element, index) => {
+      if (this.value[index] !== iterable.value[index]) {
+        return new MalBool(false);
+      }
+    });
+
+    return new MalBool(true);
+  }
+}
+
+class MalList extends MalIterables {
   constructor(value) {
     super(value);
   }
@@ -31,29 +64,12 @@ class MalList extends MalValue {
     );
   }
 
-  length() {
-    return this.value.length;
-  }
-
-  isEqualTo(list) {
-    if (this.length() != list.length()) {
-      return false;
-    }
-
-    for (let index = 0; index < this.length(); index++) {
-      if (this.value[index] != list.value[index]) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   isEmpty() {
     return this.value.length === 0;
   }
 }
 
-class MalVector extends MalValue {
+class MalVector extends MalIterables {
   constructor(value) {
     super(value);
   }
@@ -104,7 +120,9 @@ class MalFunction extends MalValue {
 
 module.exports = {
   MalValue,
+  MalNumber,
   MalSymbol,
+  MalIterables,
   MalList,
   MalVector,
   MalBool,
