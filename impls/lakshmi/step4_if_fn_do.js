@@ -12,7 +12,9 @@ const rl = readline.createInterface({
 
 const eval_let = (ast, env) => {
   const letEnv = new Env(env);
+
   const bindingList = ast.value[1].value;
+  const forms = ast.value.slice(2);
 
   for (let index = 0; index < bindingList.length; index = index + 2) {
     const key = bindingList[index];
@@ -30,8 +32,7 @@ const eval_let = (ast, env) => {
 };
 
 const eval_do = (ast, env) => {
-  const forms = ast.value.slice(1);
-  const formsResult = forms.map((form) => EVAL(form, env));
+  const formsResult = ast.map((form) => EVAL(form, env));
   return formsResult[formsResult.length - 1];
 };
 
@@ -57,8 +58,7 @@ const eval_fn = (ast, env) => {
   const inner_fn = (...args) => {
     const exprs = new MalList(args);
     const [binds, body] = ast.value.slice(1);
-    const fnEnv = new Env(env, binds, exprs);
-    fnEnv.bindEnv(exprs);
+    const fnEnv = new Env(env, binds.value, exprs.value);
     return EVAL(body, fnEnv);
   };
 
@@ -103,7 +103,7 @@ const EVAL = (ast, env) => {
       return eval_let(ast, env);
 
     case 'do':
-      return eval_do(ast, env);
+      return eval_do(ast.value.slice(1), env);
 
     case 'if':
       return eval_if(ast, env);

@@ -1,15 +1,16 @@
 class Env {
   #outer;
-  constructor(outer, binds, exprs) {
+  constructor(outer, binds = [], exprs = []) {
     this.#outer = outer;
     this.data = {};
     this.binds = binds;
     this.exprs = exprs;
+    this.#init();
   }
 
-  bindEnv(exprs) {
-    this.binds.value.forEach((symbol, index) => {
-      const value = exprs.value[index];
+  #init() {
+    this.binds.forEach((symbol, index) => {
+      const value = exprs[index];
       this.set(symbol, value);
     });
   }
