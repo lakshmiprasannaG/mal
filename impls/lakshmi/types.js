@@ -8,7 +8,7 @@ class MalValue {
   }
 
   equals(anotherValue) {
-    return new MalBool(this.value === anotherValue.value);
+    return this.value === anotherValue.value;
   }
 }
 
@@ -31,19 +31,23 @@ class MalIterables extends MalValue {
 
   equals(iterable) {
     if (!(iterable instanceof MalIterables)) {
-      return new MalBool(false);
+      return false;
     }
     if (this.value.length !== iterable.value.length) {
-      return new MalBool(false);
+      return false;
     }
 
     this.value.forEach((element, index) => {
       if (this.value[index] !== iterable.value[index]) {
-        return new MalBool(false);
+        return false;
       }
     });
 
-    return new MalBool(true);
+    return true;
+  }
+
+  isEmpty() {
+    return this.value.length === 0;
   }
 }
 
@@ -62,10 +66,6 @@ class MalList extends MalIterables {
         .join(' ') +
       ')'
     );
-  }
-
-  isEmpty() {
-    return this.value.length === 0;
   }
 }
 

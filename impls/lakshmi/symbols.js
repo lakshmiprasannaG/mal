@@ -8,21 +8,6 @@ const {
   MalNumber,
 } = require('./types');
 
-const areEqual = (firstElement, secondElement) => {
-  if (firstElement.value.length !== secondElement.value.length) {
-    return false;
-  }
-
-  // if array take 1st Element  areEqual(arr[0], arr1[0]);
-
-  for (let index = 0; index < firstElement.value.length; index++) {
-    if (firstElement.value[index] !== secondElement.value[index]) {
-      return false;
-    }
-  }
-  return true;
-};
-
 const initializeEnvWithSymbols = (env) => {
   env.set(new MalSymbol('+'), (...args) =>
     args.reduce((context, num) => new MalNumber(context.value + num.value))
@@ -40,9 +25,7 @@ const initializeEnvWithSymbols = (env) => {
     args.reduce((context, num) => new MalNumber(context.value / num.value))
   );
 
-  env.set(new MalSymbol('='), (a, b) => {
-    return new MalBool(a.equals(b));
-  });
+  env.set(new MalSymbol('='), (a, b) => new MalBool(a.equals(b)));
 
   env.set(new MalSymbol('>'), (a, b) => new MalBool(a.value > b.value));
 
