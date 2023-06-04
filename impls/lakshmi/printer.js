@@ -5,9 +5,6 @@ const pr_str = (malValue) => {
     return malValue.pr_str();
   }
 
-  // if (malValue instanceof Function) {
-  //   return '#<function>';
-  // }
   return malValue.toString();
 };
 

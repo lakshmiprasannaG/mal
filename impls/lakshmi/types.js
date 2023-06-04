@@ -10,6 +10,10 @@ class MalValue {
   equals(anotherValue) {
     return this.value === anotherValue.value;
   }
+
+  count() {
+    return 1;
+  }
 }
 
 class MalNumber extends MalValue {
@@ -24,13 +28,13 @@ class MalSymbol extends MalValue {
   }
 }
 
-class MalIterables extends MalValue {
+class MalIterable extends MalValue {
   constructor(value) {
     super(value);
   }
 
   equals(iterable) {
-    if (!(iterable instanceof MalIterables)) {
+    if (!(iterable instanceof MalIterable)) {
       return false;
     }
     if (this.value.length !== iterable.value.length) {
@@ -49,9 +53,13 @@ class MalIterables extends MalValue {
   isEmpty() {
     return this.value.length === 0;
   }
+
+  count() {
+    return this.value.length;
+  }
 }
 
-class MalList extends MalIterables {
+class MalList extends MalIterable {
   constructor(value) {
     super(value);
   }
@@ -69,7 +77,7 @@ class MalList extends MalIterables {
   }
 }
 
-class MalVector extends MalIterables {
+class MalVector extends MalIterable {
   constructor(value) {
     super(value);
   }
@@ -104,6 +112,10 @@ class MalNil extends MalValue {
   pr_str() {
     return 'nil';
   }
+
+  count() {
+    return 0;
+  }
 }
 
 class MalFunction extends MalValue {
@@ -122,7 +134,7 @@ module.exports = {
   MalValue,
   MalNumber,
   MalSymbol,
-  MalIterables,
+  MalIterable,
   MalList,
   MalVector,
   MalBool,

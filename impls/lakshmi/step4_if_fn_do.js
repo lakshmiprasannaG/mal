@@ -3,7 +3,7 @@ const { read_str } = require('./reader');
 const { pr_str } = require('./printer');
 const { MalSymbol, MalList, MalVector, MalNil } = require('./types');
 const { Env } = require('./env.js');
-const { initializeEnvWithSymbols } = require('./symbols.js');
+const { createReplEnv } = require('./core.js');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -116,8 +116,7 @@ const EVAL = (ast, env) => {
   return fn.apply(null, args);
 };
 
-const env = new Env();
-initializeEnvWithSymbols(env);
+const env = createReplEnv();
 
 const READ = (str) => read_str(str);
 
