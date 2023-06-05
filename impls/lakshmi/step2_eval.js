@@ -1,7 +1,13 @@
 const readline = require('readline');
 const { read_str } = require('./reader');
 const { pr_str } = require('./printer');
-const { MalSymbol, MalList, MalVector } = require('./types');
+const {
+  MalSymbol,
+  MalList,
+  MalVector,
+  MalNumber,
+  MalBool,
+} = require('./types');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -9,15 +15,19 @@ const rl = readline.createInterface({
 });
 
 const env = {
-  '+': (...args) => args.reduce((context, num) => context + num),
+  '+': (...args) =>
+    args.reduce((context, num) => new MalNumber(context.value + num.value)),
 
-  '-': (...args) => args.reduce((context, num) => context - num),
+  '-': (...args) =>
+    args.reduce((context, num) => new MalNumber(context.value - num.value)),
 
-  '*': (...args) => args.reduce((context, num) => context * num),
+  '*': (...args) =>
+    args.reduce((context, num) => new MalNumber(context.value * num.value)),
 
-  '/': (...args) => args.reduce((context, num) => context / num),
+  '/': (...args) =>
+    args.reduce((context, num) => new MalNumber(context.value / num.value)),
 
-  '=': (a, b) => a === b,
+  '=': (a, b) => new MalBool(a.equals(b)),
 };
 
 const eval_ast = (ast, env) => {
