@@ -1,6 +1,12 @@
 const { Env } = require('./env.js');
-
-const { MalSymbol, MalList, MalBool, MalNumber } = require('./types');
+const {
+  MalSymbol,
+  MalList,
+  MalBool,
+  MalNumber,
+  MalNil,
+  MalString,
+} = require('./types');
 
 const ns = {
   '+': (...args) =>
@@ -36,7 +42,8 @@ const ns = {
   },
 
   prn: (...args) => {
-    return args.slice(-1)[0];
+    args.forEach((arg) => console.log(arg.value));
+    return new MalNil();
   },
 };
 

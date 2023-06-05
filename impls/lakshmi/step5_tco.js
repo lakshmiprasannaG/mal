@@ -9,7 +9,7 @@ const {
   MalFunction,
 } = require('./types');
 const { Env } = require('./env.js');
-const { initializeEnvWithSymbols } = require('./symbols.js');
+const { createReplEnv } = require('./core.js');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -117,8 +117,7 @@ const EVAL = (ast, env) => {
   }
 };
 
-const env = new Env();
-initializeEnvWithSymbols(env);
+const env = createReplEnv();
 
 const READ = (str) => read_str(str);
 
