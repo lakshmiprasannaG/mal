@@ -3,7 +3,7 @@ const { read_str } = require('./reader');
 const { pr_str } = require('./printer');
 const { MalSymbol, MalList, MalVector, MalNil } = require('./types');
 const { Env } = require('./env.js');
-const { createReplEnv } = require('./core.js');
+const { ns } = require('./core.js');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -114,6 +114,13 @@ const EVAL = (ast, env) => {
 
   const [fn, ...args] = eval_ast(ast, env).value;
   return fn.apply(null, args);
+};
+
+const createReplEnv = () => {
+  const env = new Env();
+  const nsList = Object.keys(ns);
+  nsList.forEach((symbol) => env.set(new MalSymbol(symbol), ns[symbol]));
+  return env;
 };
 
 const env = createReplEnv();

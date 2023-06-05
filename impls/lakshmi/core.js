@@ -1,10 +1,14 @@
+const fs = require('fs');
 const { Env } = require('./env.js');
+const { read_str } = require('./reader.js');
+const { pr_str } = require('./printer.js');
 const {
   MalSymbol,
   MalList,
   MalBool,
   MalNumber,
   MalNil,
+  MalVector,
   MalString,
 } = require('./types');
 
@@ -31,6 +35,8 @@ const ns = {
 
   '>=': (a, b) => new MalBool(a.value >= b.value),
 
+  vector: (...args) => new MalVector(args),
+
   list: (...args) => new MalList(args),
 
   'list?': (arg) => arg instanceof MalList,
@@ -45,13 +51,15 @@ const ns = {
     args.forEach((arg) => console.log(arg.value));
     return new MalNil();
   },
+
+  'pr-str': (...args) => args.map((arg) => pr_str(arg, true)).join(' '),
+
+  str: (...args) =>
+    new MalString(args.map((arg) => pr_str(arg, false)).join('')),
+
+  'read-string': (string) => read_str(string.value),
+
+  slurp: (filename) => new MalString(fs.readFileSync(filename.value, 'utf8')),
 };
 
-const createReplEnv = () => {
-  const env = new Env();
-  const nsList = Object.keys(ns);
-  nsList.forEach((symbol) => env.set(new MalSymbol(symbol), ns[symbol]));
-  return env;
-};
-
-module.exports = { createReplEnv };
+module.exports = { ns };

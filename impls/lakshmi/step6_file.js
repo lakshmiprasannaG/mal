@@ -117,22 +117,30 @@ const EVAL = (ast, env) => {
   }
 };
 
+const READ = (str) => read_str(str);
+
+const PRINT = (malValue) => pr_str(malValue, true);
+
+const rep = (str) => PRINT(EVAL(READ(str), env));
+
+const env = new Env();
+
 const createReplEnv = () => {
-  const env = new Env();
   const nsList = Object.keys(ns);
   nsList.forEach((symbol) => env.set(new MalSymbol(symbol), ns[symbol]));
+
+  env.set(new MalSymbol('eval'), (ast) => EVAL(ast, env));
+
+  rep(
+    '(def! load-file (fn* (f) (eval (read-string (str "(do " (slurp f) "\nnil)")))))'
+  );
+
   return env;
 };
 
-const env = createReplEnv();
+createReplEnv();
 
-const READ = (str) => read_str(str);
-
-const PRINT = (malValue) => {
-  return pr_str(malValue);
-};
-
-const rep = (str) => PRINT(EVAL(READ(str), env));
+// const env = createReplEnv();
 
 const repl = () =>
   rl.question('user> ', (line) => {

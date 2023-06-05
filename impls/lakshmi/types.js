@@ -3,7 +3,7 @@ class MalValue {
     this.value = value;
   }
 
-  pr_str() {
+  pr_str(printReadably = false) {
     return this.value.toString();
   }
 
@@ -31,6 +31,21 @@ class MalSymbol extends MalValue {
 class MalString extends MalValue {
   constructor(value) {
     super(value);
+  }
+
+  pr_str(printReadably = false) {
+    if (printReadably) {
+      return (
+        '"' +
+        this.value
+          .replace(/\\/g, '\\\\')
+          .replace(/"/g, '\\"')
+          .replace(/\n/g, '\\n') +
+        '"'
+      );
+    }
+    return this.value;
+    // return '"' + this.value.toString() + '"';
   }
 }
 
@@ -70,7 +85,7 @@ class MalList extends MalIterable {
     super(value);
   }
 
-  pr_str() {
+  pr_str(printReadably = false) {
     return (
       '(' +
       this.value
@@ -88,7 +103,7 @@ class MalVector extends MalIterable {
     super(value);
   }
 
-  pr_str() {
+  pr_str(printReadably = false) {
     return (
       '[' +
       this.value

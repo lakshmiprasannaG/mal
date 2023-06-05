@@ -60,13 +60,12 @@ const read_vector = (reader) => {
   return new MalVector(ast);
 };
 
-const applyStrTransformations = (str) => {
-  if (str.match('".*\\\\"')) {
-    const backslashIndex = str.indexOf('\\"');
-    return str.slice(0, backslashIndex);
-  }
+const createMalString = (str) => {
+  const string = str.replace(/\\(.)/g, (_, captured) =>
+    captured === 'n' ? '\n' : captured
+  );
 
-  return str;
+  return new MalString(string);
 };
 
 const read_atom = (reader) => {
@@ -82,14 +81,14 @@ const read_atom = (reader) => {
 
   if (token === 'nil') return new MalNil();
 
-  if (token.match(/^".*/)) {
-    // const newToken = applyStrTransformations(token);
+  if (token.startsWith('"')) {
+    // if (!token.match(/^".*"$/)) {
+    //   throw 'unbalanced';
+    // }
 
-    if (!token.match(/^".*"$/)) {
-      throw 'unbalanced';
-    }
-
-    return new MalString(token);
+    const newToken = token.slice(1, -1);
+    // It's looping twice => debug this behaviour
+    return createMalString(newToken);
   }
 
   return new MalSymbol(token);
