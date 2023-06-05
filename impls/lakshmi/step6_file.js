@@ -140,8 +140,6 @@ const createReplEnv = () => {
 
 createReplEnv();
 
-// const env = createReplEnv();
-
 const repl = () =>
   rl.question('user> ', (line) => {
     try {

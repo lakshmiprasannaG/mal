@@ -10,6 +10,7 @@ const {
   MalNil,
   MalVector,
   MalString,
+  MalAtom,
 } = require('./types');
 
 const ns = {
@@ -57,9 +58,25 @@ const ns = {
   str: (...args) =>
     new MalString(args.map((arg) => pr_str(arg, false)).join('')),
 
+  println: (...args) => {
+    const string = args.map((arg) => pr_str(arg, false)).join(' ');
+    console.log(string);
+    return new MalNil();
+  },
+
   'read-string': (string) => read_str(string.value),
 
   slurp: (filename) => new MalString(fs.readFileSync(filename.value, 'utf8')),
+
+  atom: (value) => new MalAtom(value),
+
+  'atom?': (value) => value instanceof MalAtom,
+
+  deref: (atom) => atom.deref(),
+
+  'reset!': (atom, value) => atom.reset(value),
+
+  '*ARGV*': () => new MalList(read_str(...process.argv.slice(2))),
 };
 
 module.exports = { ns };

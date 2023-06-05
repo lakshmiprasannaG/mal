@@ -108,7 +108,7 @@ const read_form = (reader) => {
 };
 
 const read_str = (str) => {
-  const tokens = tokenize(str);
+  const tokens = tokenize(str).filter((str) => !str.startsWith(';'));
   const reader = new Reader(tokens);
   return read_form(reader);
 };

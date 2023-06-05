@@ -151,6 +151,25 @@ class MalFunction extends MalValue {
   }
 }
 
+class MalAtom extends MalValue {
+  constructor(value) {
+    super(value);
+  }
+
+  deref() {
+    return this.value;
+  }
+
+  reset(value) {
+    this.value = value;
+    return this.value;
+  }
+
+  pr_str() {
+    return '(atom ' + this.value.pr_str() + ')';
+  }
+}
+
 module.exports = {
   MalValue,
   MalNumber,
@@ -162,4 +181,5 @@ module.exports = {
   MalBool,
   MalNil,
   MalFunction,
+  MalAtom,
 };
