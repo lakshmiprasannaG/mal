@@ -8,8 +8,19 @@ const rl = readline.createInterface({
 });
 
 const READ = (str) => read_str(str);
+
 const EVAL = (str) => str;
-const PRINT = (malValue) => pr_str(malValue);
+
+const PRINT = (malValue) => {
+  // let printReadably = false;
+  // if (printReadably instanceof MalString) {
+  //   printReadably = true;
+  // }
+
+  // return pr_str(malValue, printReadably);
+
+  return pr_str(malValue);
+};
 
 const rep = (str) => PRINT(EVAL(READ(str)));
 

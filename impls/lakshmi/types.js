@@ -28,6 +28,12 @@ class MalSymbol extends MalValue {
   }
 }
 
+class MalString extends MalValue {
+  constructor(value) {
+    super(value);
+  }
+}
+
 class MalIterable extends MalValue {
   constructor(value) {
     super(value);
@@ -134,6 +140,7 @@ module.exports = {
   MalValue,
   MalNumber,
   MalSymbol,
+  MalString,
   MalIterable,
   MalList,
   MalVector,

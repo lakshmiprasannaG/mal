@@ -5,6 +5,7 @@ const {
   MalBool,
   MalNil,
   MalNumber,
+  MalString,
 } = require('./types.js');
 
 class Reader {
@@ -59,6 +60,15 @@ const read_vector = (reader) => {
   return new MalVector(ast);
 };
 
+const applyStrTransformations = (str) => {
+  if (str.match('".*\\\\"')) {
+    const backslashIndex = str.indexOf('\\"');
+    return str.slice(0, backslashIndex);
+  }
+
+  return str;
+};
+
 const read_atom = (reader) => {
   const token = reader.next();
 
@@ -71,6 +81,16 @@ const read_atom = (reader) => {
   if (token === 'false') return new MalBool(false);
 
   if (token === 'nil') return new MalNil();
+
+  if (token.match(/^".*/)) {
+    // const newToken = applyStrTransformations(token);
+
+    if (!token.match(/^".*"$/)) {
+      throw 'unbalanced';
+    }
+
+    return new MalString(token);
+  }
 
   return new MalSymbol(token);
 };
