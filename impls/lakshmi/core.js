@@ -11,6 +11,7 @@ const {
   MalVector,
   MalString,
   MalAtom,
+  MalKeyword,
 } = require('./types');
 
 const ns = {

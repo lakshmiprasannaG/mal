@@ -3,7 +3,6 @@ const pr_str = (malValue, printReadably = true) => {
     return malValue.pr_str(printReadably);
   }
 
-  console.log('malValue : ', malValue);
   return malValue.toString();
 };
 
@@ -53,6 +52,16 @@ class MalString extends MalValue {
         '"'
       );
     }
+    return this.value;
+  }
+}
+
+class MalKeyword extends MalValue {
+  constructor(value) {
+    super(value);
+  }
+
+  pr_str() {
     return this.value;
   }
 }
@@ -198,5 +207,6 @@ module.exports = {
   MalNil,
   MalFunction,
   MalAtom,
+  MalKeyword,
   pr_str,
 };
