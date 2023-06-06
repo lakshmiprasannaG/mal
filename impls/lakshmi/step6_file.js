@@ -7,6 +7,7 @@ const {
   MalVector,
   MalNil,
   MalFunction,
+  MalHashMap,
 } = require('./types');
 const { Env } = require('./env.js');
 const { ns } = require('./core.js');
@@ -73,6 +74,16 @@ const eval_ast = (ast, env) => {
   if (ast instanceof MalVector) {
     const newAst = ast.value.map((x) => EVAL(x, env));
     return new MalVector(newAst);
+  }
+
+  if (ast instanceof MalHashMap) {
+    const newAst = ast.value.map((x) => EVAL(x, env));
+
+    for (let index = 0; index < newAst.length; index += 2) {
+      env.set(newAst[index], newAst[index + 1]);
+    }
+
+    return new MalHashMap(newAst);
   }
 
   return ast;

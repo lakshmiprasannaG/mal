@@ -134,6 +134,27 @@ class MalVector extends MalIterable {
   }
 }
 
+class MalHashMap extends MalValue {
+  constructor(value) {
+    super(value);
+  }
+
+  pr_str(printReadably) {
+    return (
+      '{' +
+      this.value
+        .map((x) => {
+          if (x instanceof MalValue) {
+            return x.pr_str();
+          }
+          return x;
+        })
+        .join(' ') +
+      '}'
+    );
+  }
+}
+
 class MalBool extends MalValue {
   constructor(value) {
     super(value);
@@ -203,6 +224,7 @@ module.exports = {
   MalIterable,
   MalList,
   MalVector,
+  MalHashMap,
   MalBool,
   MalNil,
   MalFunction,

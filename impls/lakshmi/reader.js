@@ -2,6 +2,7 @@ const {
   MalSymbol,
   MalList,
   MalVector,
+  MalHashMap,
   MalBool,
   MalNil,
   MalNumber,
@@ -61,6 +62,18 @@ const read_vector = (reader) => {
   return new MalVector(ast);
 };
 
+const isEven = (num) => num % 2 === 0;
+
+const read_hash_map = (reader) => {
+  const ast = read_seq(reader, '}');
+
+  if (!isEven(ast.length)) {
+    throw 'unbalanced';
+  }
+
+  return new MalHashMap(ast);
+};
+
 const createMalString = (str) => {
   const string = str.replace(/\\(.)/g, (_, captured) =>
     captured === 'n' ? '\n' : captured
@@ -110,6 +123,8 @@ const read_form = (reader) => {
       return read_list(reader);
     case '[':
       return read_vector(reader);
+    case '{':
+      return read_hash_map(reader);
     case "'":
       return prependSymbol(reader, 'quote');
     case '`':
