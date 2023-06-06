@@ -36,7 +36,7 @@ const ns = {
 
   '>=': (a, b) => new MalBool(a.value >= b.value),
 
-  vector: (...args) => new MalVector(args),
+  vec: (args) => new MalVector(args.value.slice()),
 
   list: (...args) => new MalList(args),
 
@@ -77,6 +77,14 @@ const ns = {
   'reset!': (atom, value) => atom.reset(value),
 
   '*ARGV*': () => new MalList(read_str(...process.argv.slice(2))),
+
+  'swap!': (atom, fn, ...args) => {
+    return atom.swap(fn, args);
+  },
+
+  cons: (value, list) => new MalList([value, ...list.value]),
+
+  concat: (...lists) => new MalList(lists.flatMap((x) => x.value)),
 };
 
 module.exports = { ns };

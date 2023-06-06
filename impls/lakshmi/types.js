@@ -1,9 +1,18 @@
+const pr_str = (malValue, printReadably = true) => {
+  if (malValue instanceof MalValue) {
+    return malValue.pr_str(printReadably);
+  }
+
+  console.log('malValue : ', malValue);
+  return malValue.toString();
+};
+
 class MalValue {
   constructor(value) {
     this.value = value;
   }
 
-  pr_str(printReadably = false) {
+  pr_str(printReadably) {
     return this.value.toString();
   }
 
@@ -33,7 +42,7 @@ class MalString extends MalValue {
     super(value);
   }
 
-  pr_str(printReadably = false) {
+  pr_str(printReadably) {
     if (printReadably) {
       return (
         '"' +
@@ -85,16 +94,14 @@ class MalList extends MalIterable {
     super(value);
   }
 
-  pr_str(printReadably = false) {
+  pr_str(printReadably) {
     return (
-      '(' +
-      this.value
-        .map((x) => {
-          return x instanceof MalValue ? x.pr_str() : x;
-        })
-        .join(' ') +
-      ')'
+      '(' + this.value.map((x) => pr_str(x, printReadably)).join(' ') + ')'
     );
+  }
+
+  beginsWith(startValue) {
+    return this.value.length > 0 && this.value[0].value === startValue;
   }
 }
 
@@ -103,7 +110,7 @@ class MalVector extends MalIterable {
     super(value);
   }
 
-  pr_str(printReadably = false) {
+  pr_str(printReadably) {
     return (
       '[' +
       this.value
@@ -140,14 +147,20 @@ class MalNil extends MalValue {
 }
 
 class MalFunction extends MalValue {
-  constructor(ast, params, env) {
+  constructor(ast, params, env, fn) {
     super(ast);
     this.params = params;
     this.env = env;
+    this.fn = fn;
   }
 
   pr_str() {
     return '#<function>';
+  }
+
+  apply(_, args) {
+    console.log('args in apply : ', args);
+    return this.fn(null, ...args);
   }
 }
 
@@ -168,6 +181,11 @@ class MalAtom extends MalValue {
   pr_str() {
     return '(atom ' + this.value.pr_str() + ')';
   }
+
+  swap(fn, args) {
+    this.value = fn.apply(null, [this.value, ...args]);
+    return this.value;
+  }
 }
 
 module.exports = {
@@ -182,4 +200,5 @@ module.exports = {
   MalNil,
   MalFunction,
   MalAtom,
+  pr_str,
 };

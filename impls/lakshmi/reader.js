@@ -94,6 +94,11 @@ const read_atom = (reader) => {
   return new MalSymbol(token);
 };
 
+const prependSymbol = (reader, symbol) => {
+  reader.next();
+  return new MalList([new MalSymbol(symbol), read_form(reader)]);
+};
+
 const read_form = (reader) => {
   const token = reader.peek();
 
@@ -102,6 +107,14 @@ const read_form = (reader) => {
       return read_list(reader);
     case '[':
       return read_vector(reader);
+    case "'":
+      return prependSymbol(reader, 'quote');
+    case '`':
+      return prependSymbol(reader, 'quasiquote');
+    case '~':
+      return prependSymbol(reader, 'unquote');
+    case '~@':
+      return prependSymbol(reader, 'splice-unquote');
     default:
       return read_atom(reader);
   }

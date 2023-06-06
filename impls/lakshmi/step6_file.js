@@ -51,8 +51,13 @@ const eval_if = (ast, env) => {
 
 const eval_fn = (ast, env) => {
   const [params, ...fnBody] = ast.value.slice(1);
-  const newFnBody = new MalList([new MalSymbol('do'), ...fnBody]);
-  return new MalFunction(newFnBody, params, env);
+  const doForms = new MalList([new MalSymbol('do'), ...fnBody]);
+
+  const fn = (...args) => {
+    const newEnv = new Env(env, params.value, args);
+    return EVAL(doForms, newEnv);
+  };
+  return new MalFunction(doForms, params, env, fn);
 };
 
 const eval_ast = (ast, env) => {

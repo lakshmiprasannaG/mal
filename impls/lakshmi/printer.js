@@ -1,11 +1,12 @@
-const { MalValue } = require('./types.js');
+const { pr_str } = require('./types.js');
 
-const pr_str = (malValue, printReadably = false) => {
-  if (malValue instanceof MalValue) {
-    return malValue.pr_str(printReadably);
-  }
+// const pr_str = (malValue, printReadably = false) => {
+//   if (malValue instanceof MalValue) {
+//     return malValue.pr_str(printReadably);
+//   }
 
-  return malValue.toString();
-};
+//   console.log('malValue : ', malValue);
+//   return malValue.toString();
+// };
 
-exports.pr_str = pr_str;
+module.exports = { pr_str };
