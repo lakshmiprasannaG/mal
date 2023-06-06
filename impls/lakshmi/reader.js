@@ -115,6 +115,8 @@ const read_form = (reader) => {
       return prependSymbol(reader, 'unquote');
     case '~@':
       return prependSymbol(reader, 'splice-unquote');
+    case '@':
+      return prependSymbol(reader, 'deref');
     default:
       return read_atom(reader);
   }

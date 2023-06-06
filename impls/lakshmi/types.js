@@ -54,7 +54,6 @@ class MalString extends MalValue {
       );
     }
     return this.value;
-    // return '"' + this.value.toString() + '"';
   }
 }
 
@@ -159,8 +158,7 @@ class MalFunction extends MalValue {
   }
 
   apply(_, args) {
-    console.log('args in apply : ', args);
-    return this.fn(null, ...args);
+    return this.fn.apply(null, args);
   }
 }
 
