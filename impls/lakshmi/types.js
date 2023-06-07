@@ -97,7 +97,8 @@ class MalIterable extends MalValue {
   }
 
   nth(n) {
-    if (n.value > this.value.length) throw 'index out of bound';
+    if (n.value >= this.value.length) throw 'index out of bound';
+
     return this.value[n.value];
   }
 
