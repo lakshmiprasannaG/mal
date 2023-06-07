@@ -7,6 +7,7 @@ const {
   MalVector,
   MalNil,
   MalFunction,
+  MalIterable,
 } = require('./types');
 const { Env } = require('./env.js');
 const { ns } = require('./core.js');
@@ -83,7 +84,7 @@ const quasiQuote = (ast, env) => {
     return ast.value[1];
   }
 
-  if (ast instanceof MalList) {
+  if (ast instanceof MalIterable) {
     let result = new MalList([]);
 
     for (let index = ast.value.length - 1; index >= 0; index--) {
@@ -103,6 +104,11 @@ const quasiQuote = (ast, env) => {
         ]);
       }
     }
+
+    if (ast instanceof MalVector) {
+      return new MalList([new MalSymbol('vec'), result]);
+    }
+
     return result;
   }
 
