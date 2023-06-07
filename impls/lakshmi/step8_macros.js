@@ -78,6 +78,34 @@ const eval_ast = (ast, env) => {
   return ast;
 };
 
+const handleDefMacro = (ast, env) => {
+  const macro = EVAL(ast.value[2], env);
+  macro.isMacro = true;
+  env.set(ast.value[1], macro);
+  return env.get(ast.value[1]);
+};
+
+const isMacroCall = (ast, env) => {
+  try {
+    return (
+      ast instanceof MalList &&
+      !ast.isEmpty() &&
+      ast.value[0] instanceof MalSymbol &&
+      env.get(ast.value[0]).isMacro
+    );
+  } catch {
+    return false;
+  }
+};
+
+const macroexpand = (ast, env) => {
+  while (isMacroCall(ast, env)) {
+    const macro = env.get(ast.value[0]);
+    ast = macro.apply(null, ast.value.slice(1));
+  }
+  return ast;
+};
+
 const quasiQuote = (ast, env) => {
   if (ast instanceof MalList && ast.beginsWith('unquote')) {
     return ast.value[1];
@@ -123,6 +151,11 @@ const EVAL = (ast, env) => {
       return ast;
     }
 
+    ast = macroexpand(ast, env);
+    if (!(ast instanceof MalList)) {
+      return eval_ast(ast, env);
+    }
+
     const specialForm = ast.value[0].value;
     switch (specialForm) {
       case 'def!':
@@ -154,6 +187,12 @@ const EVAL = (ast, env) => {
       case 'quasiquote':
         ast = quasiQuote(ast.value[1], env);
         break;
+
+      case 'defmacro!':
+        return handleDefMacro(ast, env);
+
+      case 'macroexpand':
+        return macroexpand(ast.value[1], env);
 
       default:
         const [fn, ...args] = eval_ast(ast, env).value;

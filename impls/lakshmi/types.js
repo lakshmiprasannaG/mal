@@ -95,6 +95,20 @@ class MalIterable extends MalValue {
   count() {
     return this.value.length;
   }
+
+  nth(n) {
+    if (n.value > this.value.length) throw 'index out of bound';
+    return this.value[n.value];
+  }
+
+  first() {
+    if (this.isEmpty()) return new MalNil();
+    return this.value[0];
+  }
+
+  rest() {
+    return new MalList(this.value.slice(1));
+  }
 }
 
 class MalList extends MalIterable {
@@ -176,11 +190,12 @@ class MalNil extends MalValue {
 }
 
 class MalFunction extends MalValue {
-  constructor(ast, params, env, fn) {
+  constructor(ast, params, env, fn, isMacro = false) {
     super(ast);
     this.params = params;
     this.env = env;
     this.fn = fn;
+    this.isMacro = isMacro;
   }
 
   pr_str() {

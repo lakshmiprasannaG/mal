@@ -27,6 +27,8 @@ const ns = {
   '/': (...args) =>
     args.reduce((context, num) => new MalNumber(context.value / num.value)),
 
+  mod: (a, b) => new MalBool(a.value % b.value),
+
   '=': (a, b) => new MalBool(a.equals(b)),
 
   '>': (a, b) => new MalBool(a.value > b.value),
@@ -86,6 +88,12 @@ const ns = {
   cons: (value, list) => new MalList([value, ...list.value]),
 
   concat: (...lists) => new MalList(lists.flatMap((x) => x.value)),
+
+  nth: (list, n) => list.nth(n),
+
+  first: (list) => (list instanceof MalNil ? new MalNil() : list.first()),
+
+  rest: (list) => (list instanceof MalNil ? new MalList([]) : list.rest()),
 };
 
 module.exports = { ns };
